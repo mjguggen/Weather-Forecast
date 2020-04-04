@@ -395,7 +395,7 @@ input[type="checkbox"] {
     border-radius: 20px;
     background-color: transparent;
     border: solid 1px white;
-    margin-left: 5px;
+    padding-left: 8px;
     width: 25px;
     color: white;
     text-shadow: 0 0 3px black;
@@ -775,9 +775,9 @@ input[type='button'] {
         grid-template-rows: 35px 20px 30px;
     }
 
-    .forecast-icon {
-        display: none;
-    }
+//    .forecast-icon {
+//        display: none;
+//    }
 }
 
 @media only screen and (max-height: 680px) {
@@ -1379,10 +1379,11 @@ input[type='button'] {
 
     #semiCircle {
         width: 90%;
-        height: 1px;
+        height: 2px;
         opacity: 70%;
-        box-shadow: 0 0 4px white;
+        box-shadow: 0 0 2px white;
         background: white;
+        background-color: white;
         display: flex;
         justify-content: center;
         margin-left: auto;
