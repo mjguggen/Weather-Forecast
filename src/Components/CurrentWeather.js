@@ -1,5 +1,8 @@
 import React from 'react';
 
+
+
+
 const CurrentWeather = (props) => (
     <div className='current-wrapper-container' style={props.oppStyle}>
 
@@ -7,7 +10,7 @@ const CurrentWeather = (props) => (
                 <div id="current-temp" > {Math.round(props.currentTemp)}° </div>
             <div id="current-city" > {props.city}, {props.state} </div>
                 <div className="current-description">
-                    <div> {props.currentDescription}                 {props.currentWeatherIcon && <img id="current-img" src={'https://www.weatherbit.io/static/img/icons/'+props.currentWeatherIcon+'.png'} />  }
+                    <div> {props.currentDescription}                 {props.currentWeatherIcon && <img id="current-img" src={props.currentWeatherIcon} />  }
                     </div>
                 </div>
         </div>

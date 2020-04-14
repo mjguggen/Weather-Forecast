@@ -25,7 +25,7 @@ const Forecast = props => {
     )
 
     const message = (day) => (
-        props.forecastHighs !== undefined ?  `${weekDayMap[day]}'s forecast calls for ${props.forecastDescription[day].toLowerCase()} with a high temperature of ${props.forecastHighs[day]}° and low temperature of ${props.forecastLows[day]}°.` : ""
+        props.forecastHighs !== undefined ?  `${weekDayMap[day]}'s forecast calls for ${props.forecastDescription[day]} with a high temperature of ${props.forecastHighs[day]}° and low temperature of ${props.forecastLows[day]}°.` : ""
     )
 
     const dayMapArr = [0, 1, 2, 3, 4, 5, 6]
@@ -36,7 +36,7 @@ const Forecast = props => {
             <label for={"forecast-input-"+i} className="forecast-label" id={"day-checkbox-"+i} > 
                 <div className="forecast-day-grid" id={"day-data-"+i}>
                     <div className ="weekday" id={"weekday-"+i}> {weekDayMap[i]} </div>
-                    <img className="forecast-icon" id={"forecast-icon-"+i} src={'https://www.weatherbit.io/static/img/icons/'+getData(props.forecastIcons,i)+'.png'}    />
+                    <img className="forecast-icon" id={"forecast-icon-"+i} src={getData(props.forecastIcons, i)}    />
                     <div> {getData(props.forecastLowHighs, i)}  </div>
                 </div>
 
@@ -51,7 +51,7 @@ const Forecast = props => {
             <label for={"forecast-input-"+i} className="forecast-label" id={"day-checkbox-"+i} > 
                 <div className="forecast-day-grid" id={"day-data-"+i}>
                     <div className ="weekday" id={"weekday-"+i}> {weekDayMap[i]} </div>
-                    <img className="forecast-icon" id={"forecast-icon-"+i} src={'https://www.weatherbit.io/static/img/icons/'+getData(props.forecastIcons,i)+'.png'}    />
+                    <img className="forecast-icon" id={"forecast-icon-"+i} src={getData(props.forecastIcons, i)} />
                     <div className="forecast-description"> {getData(props.forecastDescription, i)} </div>
                     <div > {getData(props.forecastLowHighs, i)}  </div>
                 </div>
