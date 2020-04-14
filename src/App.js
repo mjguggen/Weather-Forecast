@@ -695,7 +695,7 @@ class App extends React.Component {
       //push data to save arrays
       await currentDataSave.push(currentData)
       await forecastDataSave.push(forecastData)
-      await hourlyDataSave.push(forecastData)
+      await hourlyDataSave.push(hourlyData)
       await locationDataSave.push(locationData)
 
       console.log(currentDataSave)
@@ -721,11 +721,7 @@ class App extends React.Component {
     saveLat.push(lat)
     saveLon.push(lon)
     saveState.push(currentState)
-
-    const arrayValue = (index) => {
-      return [saveLat[index], saveLon[index], saveCity[index]]
-    }
-
+    
     await this.setState({
       previousCityMap: saveCity.map((element, index) => <div>
           <input type="checkbox" className="recent-city-checkbox" id={saveLat[index]} key={saveCity[index]} value={index} onClick={this.getRecentWeather}/> 
@@ -735,6 +731,7 @@ class App extends React.Component {
       </div>
       )
     })
+    
   }
 
 
