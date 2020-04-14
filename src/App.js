@@ -10,7 +10,7 @@ import CurrentGrid from './Components/CurrentGrid';
 import SunStatus from './Components/SunStatus'
 import Nav from './Components/Nav'
 import MoonPhase from './Components/MoonPhase'
-
+import Footer from './Components/Footer'
 
 //Assets
 import cloudy from './Assets/Dark/cloudy_darkbg.svg'
@@ -24,9 +24,6 @@ import rain from './Assets/Dark/rain_darkbg.svg'
 import tstorm from './Assets/Dark/tstorm_darkbg.svg'
 import clear from './Assets/Either/clear_day.svg'
 import snow from './Assets/Either/snow.svg'
-import wind from './Assets/Either/wind.svg'
-
-
 
 
 //API Keys
@@ -697,11 +694,6 @@ class App extends React.Component {
       await forecastDataSave.push(forecastData)
       await hourlyDataSave.push(hourlyData)
       await locationDataSave.push(locationData)
-
-      console.log(currentDataSave)
-      console.log(forecastDataSave)
-      console.log(hourlyDataSave)
-      console.log(locationDataSave)
     }
   }
 
@@ -866,8 +858,12 @@ class App extends React.Component {
                 fireIndex={this.state.fireIndex}
               />
             </div>
+            <div className='footer mobile'> Created by Mike Guggenbuehl</div>
+
           </div>
+
         </div>
+        <div className='desktop footer'> Created by Mike Guggenbuehl</div>
       </div>
     );
   }

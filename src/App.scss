@@ -960,7 +960,14 @@ input[type='button'] {
     margin-bottom: 6px;
 }
 
-
+.footer {
+    width: 100%;
+    position: absolute;
+    bottom: 10px;
+    font-size: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 //Mobile
 @media only screen and (max-width: 475px) {
@@ -1626,7 +1633,6 @@ input[type='button'] {
     }
     
     //sun and moon
-
     .moon-phase-section {
         margin-bottom: 30px;
         width: 100%;
@@ -1638,4 +1644,14 @@ input[type='button'] {
         justify-content: space-around;
         align-items: center;
     }
+
+    .footer {
+        width: 100%;
+        position: static;
+        font-size: 12px;
+        height: 125px;
+        margin-top: -75px;
+    }
+    
+    
 }
