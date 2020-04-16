@@ -205,7 +205,9 @@ class Nav extends React.Component {
                                     {stateMap}
                                 </select>
 
-                                <button className="nav-search-button"> + </button>
+                                <button name="nav-search-button"  id="nav-search-button" className="nav-search-button"> <img  className="plus-icon" src='https://www.freepnglogos.com/uploads/plus-icon/plus-icon-plus-sign-icon-icons-download-22.png'/> </button>
+
+                                <label></label>
                             </div>
                         </form>
 

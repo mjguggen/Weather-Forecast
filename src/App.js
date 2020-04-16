@@ -24,6 +24,7 @@ import rain from './Assets/Dark/rain_darkbg.svg'
 import tstorm from './Assets/Dark/tstorm_darkbg.svg'
 import clear from './Assets/Either/clear_day.svg'
 import snow from './Assets/Either/snow.svg'
+import { ThemeProvider } from 'styled-components';
 
 
 //API Keys
@@ -153,6 +154,15 @@ const focusOn = {
   transition: 'filter 1s',
 }
 
+const loadStyle = {
+  off: {
+    display: "none"
+  },
+  on: {
+    display: "block"
+  }
+}
+
 
 class App extends React.Component {
 
@@ -168,6 +178,7 @@ class App extends React.Component {
 
     //Location Data
     city: undefined,
+    county: undefined,
     state: undefined,
     lat: undefined,
     long: undefined,
@@ -257,6 +268,11 @@ class App extends React.Component {
     getCity: undefined,
     getState: undefined,
 
+    //Loading
+    loading: false,
+    loadingStyle: loadStyle.off,
+    API_loading: undefined,
+
     //error
     error: undefined,
   }
@@ -321,26 +337,41 @@ class App extends React.Component {
   //Get weather base on zip code
   getZipWeather = async (event) => {
     event.preventDefault();
-
     const zip = event.target.input_1.value;
-    const getLatLon = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${zip}&key=${OPENCAGE_KEY}`);
-    const latLonData = await getLatLon.json();
 
-    if (getLatLon.status !== 200) {
+    await this.setState({
+      loading: true,
+      loadingStyle: loadStyle.on
+    })
+    
+    const call = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${zip}&limit=1&key=${OPENCAGE_KEY}`);
+    const data = await call.json()
+
+    if (await data.total_results === 0 || data.results[0].confidence < 2) {
       this.setState({
-        error: "Please enter a valid city"
+        error: "Please enter a valid city",
+        loading: false,
+        loadingStyle: loadStyle.off,
+        inputFocus: "off"
       })
     } else {
       await this.setState({
         zipInput: zip,
-        locationData: latLonData,
-        currentLat: latLonData.results[0].geometry.lat,
-        currentLon: latLonData.results[0].geometry.lng,
+        locationData: data,
+        currentLat: data.results[0].geometry.lat,
+        currentLon: data.results[0].geometry.lng,
       });
   
       await this.apiCalls();
       await this.stateSetter();
       await this.addToRecent();
+
+      
+      await this.setState({
+        loading: false,
+        loadingStyle: loadStyle.off, 
+        inputFocus: "off"
+      })
     }
   }
 
@@ -350,24 +381,39 @@ class App extends React.Component {
 
     const city = event.target.input_1.value.split(' ').join('+');
     const state = event.target.input_2.value;
-    const getLatLon = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city},${state}&limit=1&key=${OPENCAGE_KEY}`)
 
-    if (getLatLon.status !== 200) {
-      this.setState ({
-        error: "Enter a valid city"
+    await this.setState({
+      loading: true,
+      loadingStyle: loadStyle.on
+    })
+
+    const call = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city},${state}&limit=1&key=${OPENCAGE_KEY}`)
+    const data = await call.json()
+
+    if (await data.total_results === 0 || data.results[0].confidence < 2) {
+      this.setState({
+        error: "Please enter a valid city",
+        loading: false,
+        loadingStyle: loadStyle.off,
+        inputFocus: "off"
       })
     } else {
-      const latLonData = await getLatLon.json()
-
       await this.setState({
-        locationData: latLonData,
-        currentLat: latLonData.results[0].geometry.lat,
-        currentLon: latLonData.results[0].geometry.lng,
-      })
+        locationData: data,
+        currentLat: data.results[0].geometry.lat,
+        currentLon: data.results[0].geometry.lng,
+      });
   
       await this.apiCalls();
       await this.stateSetter();
       await this.addToRecent();
+
+      
+      await this.setState({
+        loading: false,
+        loadingStyle: loadStyle.off, 
+        inputFocus: "off"
+      })
     }
   }
   
@@ -426,26 +472,40 @@ class App extends React.Component {
       event.preventDefault();
   
       const zip = document.getElementById("navInput").value
-      const getLatLon = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${zip}&key=${OPENCAGE_KEY}`);
-      const latLonData = await getLatLon.json();
-      if (getLatLon.status === 400) {
+      await this.setState({
+        loading: true,
+        loadingStyle: loadStyle.on
+      })
+      
+      const call = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${zip}&limit=1&key=${OPENCAGE_KEY}`);
+      const data = await call.json()
+  
+      if (await data.total_results === 0 || data.results[0].confidence < 2) {
         this.setState({
-          error: "Enter a valid city"
+          error: "Please enter a valid city",
+          loading: false,
+          loadingStyle: loadStyle.off,
+          inputFocus: "off"
         })
-      } else {  
+      } else {
         await this.setState({
           zipInput: zip,
-          locationData: latLonData,
-          currentLat: latLonData.results[0].geometry.lat,
-          currentLon: latLonData.results[0].geometry.lng,
+          locationData: data,
+          currentLat: data.results[0].geometry.lat,
+          currentLon: data.results[0].geometry.lng,
         });
     
         await this.apiCalls();
         await this.stateSetter();
         await this.addToRecent();
-        await this.setState({hideNav: "on"})
+  
+        
+        await this.setState({
+          loading: false,
+          loadingStyle: loadStyle.off, 
+          inputFocus: "off"
+        })
       }
-
 
   }
 
@@ -454,22 +514,39 @@ class App extends React.Component {
 
     const city = document.getElementById("navInput").value
     const state = document.getElementById("navStateSelect").value
-    const getLatLon = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city},${state}&limit=1&key=${OPENCAGE_KEY}`)
-    const latLonData = await getLatLon.json()
-    if (getLatLon.status === 400) {
+    
+    await this.setState({
+      loading: true,
+      loadingStyle: loadStyle.on
+    })
+
+    const call = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city},${state}&limit=1&key=${OPENCAGE_KEY}`)
+    const data = await call.json()
+
+    if (await data.total_results === 0 || data.results[0].confidence < 2) {
       this.setState({
-        error: "Enter a valid city"
+        error: "Please enter a valid city",
+        loading: false,
+        loadingStyle: loadStyle.off,
+        inputFocus: "off"
       })
     } else {
       await this.setState({
-        locationData: latLonData,
-        currentLat: latLonData.results[0].geometry.lat,
-        currentLon: latLonData.results[0].geometry.lng,
-      })
+        locationData: data,
+        currentLat: data.results[0].geometry.lat,
+        currentLon: data.results[0].geometry.lng,
+      });
   
       await this.apiCalls();
       await this.stateSetter();
       await this.addToRecent();
+
+      
+      await this.setState({
+        loading: false,
+        loadingStyle: loadStyle.off, 
+        inputFocus: "off"
+      })
     }
   }
 
@@ -618,6 +695,7 @@ class App extends React.Component {
         //Location Data
         city: locationData.results[0].components.city,
         state: locationData.results[0].components.state_code,
+        county: locationData.results[0].components.county,
         lat: locationData.results[0].geometry.lat,
         long: locationData.results[0].geometry.lng,
         timezone: locationData.results[0].annotations.timezone.name,
@@ -702,7 +780,7 @@ class App extends React.Component {
   addToRecent = async () => {
     const lat = await this.state.currentLat
     const lon = await this.state.currentLon
-    const currentCity = this.state.city
+    const currentCity = this.state.city === undefined ? this.state.county : this.state.city
     const saveCity = this.state.previousCity
     const currentState = this.state.state
     const saveState = this.state.previousStateName
@@ -764,6 +842,8 @@ class App extends React.Component {
               buttonState={this.state.buttonState}
               checkInputState={this.checkInputState}
               error={this.state.error}
+              loading={this.state.loading}
+              loadingStyle={this.state.loadingStyle}
             />
 
 
@@ -774,6 +854,7 @@ class App extends React.Component {
                 currentDescription={this.state.currentDescription}
                 currentWeatherIcon={this.state.currentWeatherIcon}
                 city={this.state.city}
+                county={this.state.county}
                 state={this.state.state}
                 style={this.state.style}
                 oppStyle={this.state.oppStyle}

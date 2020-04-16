@@ -1,4 +1,5 @@
 import React from 'react';
+import loading from '../Assets/loading.svg'
 /* eslint-disable */
 
 
@@ -63,6 +64,8 @@ const Form = props => {
 
     return(
         <div id="form-box" className="form-box" style={props.style}>
+
+            {props.loading === false ? 
             <form 
                 className="form-container" 
                 onSubmit={props.getWeather}
@@ -76,8 +79,18 @@ const Form = props => {
 
                 <button id="main-button" style={props.buttonState}>+</button>
 
+            </form> : <div/>
+            }
 
-            </form>
+            
+            {props.loading &&
+                <div className="loading-container">
+                    <img className='loading' src={loading}/>
+                </div>
+            }
+
+
+
 
             {props.error !== undefined ? 
                 <div className="error"> {props.error}</div> : <div/>
