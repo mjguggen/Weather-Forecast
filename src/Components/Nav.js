@@ -1,65 +1,5 @@
 import React from 'react'
 
-const navOn = {
-    display: "block"
-}
-
-const navOff = {
-    display: "none"
-}
-
-const burgerTopOff = {
-    transformOrigin: "left top",
-    transition: "all .5s",
-    transform: "translateX(0px) rotate(0deg)",
-}
-
-const burgerTopOn = {
-    transformOrigin: "left top",
-    transition: "all .5s",
-    transform: "translateX(5px) rotate(45deg)",
-    boxShadow: "0 0 4px white",
-}
-
-const burgerMidOff = {
-    transition: "opacity .2s",
-    opacity: "1",
-}
-const burgerMidOn = {
-    transition: "opacity .2s",
-    opacity: "0",
-}
-
-const burgerBottomOff = {
-    transition: "all .5s",
-    transform: "translateX(0px) translateY(0px) rotate(0deg)",
-}
-
-const burgerBottomOn = {
-    transition: "all .5s",
-    transform: "translateX(0px) translateY(-10px) rotate(135deg)",
-    boxShadow: "0 0 4px white"
-}
-
-const navDropDownOff = {
-    transition: "left .5s",
-    left: "-125vw"
-}
-
-const navDropDownOn = {
-    transition: "left .5s",
-    left: "0px"
-}
-
-const navSearchOff = {
-    transition: "marginRight 3s",
-    transitionDelay: "3s",
-}
-
-const navSearchOn = {
-    transition: "marginRight 3s",
-    transitionDelay: "3s",
-}
 
 const stateArray = [
     {stateName: "Alabama", stateCode: "AL"},
@@ -118,118 +58,91 @@ const stateArray = [
 const stateMap = stateArray.map((i, index) => (<option id="state-option" value={stateArray[index].stateCode} key={"stateName-"+index}> {i.stateCode} </option>))
 
 
-class Nav extends React.Component {
+const Nav = props => {
 
-    state = {
-        navState: navOff,
-        status: "off",
-        burgertop: burgerTopOff,
-        burgerMid: burgerMidOff,
-        burgerBottom: burgerBottomOff,
-        navDropDown: navDropDownOff,
-        navSearch: navSearchOff,
+    const submitFunc = (event) => {
+        props.getWeatherNav(event)
+        setTimeout(props.navToggle(event), 3000)
     }
 
-    navToggle = async () => {
-        if (this.state.navState === navOff){
-            await this.setState({
-            navState : navOn,
-            status: "show",
-            burgerTop: burgerTopOn,
-            burgerMid: burgerMidOn,
-            burgerBottom: burgerBottomOn,
-            navDropDown: navDropDownOn,
-            navSearch: navSearchOn,
-        })
-        } else {
-            await this.setState({
-                navState: navOff,
-                status: "hide",
-                burgerTop: burgerTopOff,
-                burgerMid: burgerMidOff,
-                burgerBottom: burgerBottomOff,
-                navDropDown: navDropDownOff,
-                navSearch: navSearchOff,
-            })
-        }
+    const focusFunc = (event) => {
+        props.inputFocused()
+        props.zoom()
     }
 
-    submitFunc = (event) => {
-        this.props.getWeatherNav(event)
-        setTimeout(this.navToggle(event), 3000)
+    const blurFunc = (event) => {
+        props.inputUnfocused()
+        props.zoom()
     }
 
+    return(
+        <div>
+            <div className="title">
+                <h1 className="head"> WEATHER </h1>
+                <input 
+                    type="checkbox" 
+                    id="nav-burger" 
+                    onClick={props.navToggle} 
+                />
 
-    render() {
-        return(
-            <div>
-                <div className="title">
-                    <h1 className="head"> WEATHER </h1>
+                <div className="transparent-bg" />
+                <div className="full-bar" />
+
+
+                <label for="nav-burger" className="nav-icon">
+                    <div className="burger-bar" style={props.burgerTop} id="burger-bar-1"/>
+                    <div className="burger-bar" style={props.burgerMid} id="burger-bar-2"/ >
+                    <div className="burger-bar" style={props.burgerBottom} id="burger-bar-3"/>
+                </label>
+
+                <div className="nav-dropdown" style={props.navDropDown}>
+                    <form
+                        className="nav-form"
+                        onSubmit={submitFunc}
+                        id="nav-form"
+                    >
+                        <div className="nav-labels" style={props.navSearch}>
+                            <input 
+                                type="text" 
+                                id="navInput"
+                                name="navInput"
+                                className="nav-search-input"
+                                placeholder="Add New City" 
+                                onFocus={props.inputFocused} 
+                                onBlur={props.inputUnfocused}
+                                style={props.inputStateNav}
+                                onInput={props.checkInputStateNav}
+                            ></input>
+
+
+                            <select name="navStateSelect" id="navStateSelect" placeholder="Enter" style={props.formStateNav} onFocus={props.inputFocused} onBlur={props.inputUnfocused}>
+                                {stateMap}
+                            </select>
+
+                            <button name="nav-search-button"  id="nav-search-button" className="nav-search-button"> <img  className="plus-icon" src='https://www.freepnglogos.com/uploads/plus-icon/plus-icon-plus-sign-icon-icons-download-22.png'/> </button>
+
+                            <label></label>
+                        </div>
+                    </form>
+
                     <input 
                         type="checkbox" 
-                        id="nav-burger" 
-                        onClick={this.navToggle} 
+                        id="nav-bg-toggle"
+                        onClick={props.navToggle} 
                     />
 
-                    <div className="transparent-bg" />
-                    <div className="full-bar" />
+                    <label for="nav-bg-toggle" className="nav-bg-toggle-btn" style={props.navDropDown} />
 
-
-                    <label for="nav-burger" className="nav-icon">
-                        <div className="burger-bar" style={this.state.burgerTop} id="burger-bar-1"/>
-                        <div className="burger-bar" style={this.state.burgerMid} id="burger-bar-2"/ >
-                        <div className="burger-bar" style={this.state.burgerBottom} id="burger-bar-3"/>
-                    </label>
-
-                    <div className="nav-dropdown" style={this.state.navDropDown}>
-                        <form
-                            className="nav-form"
-                            onSubmit={this.submitFunc.bind(this)}
-                            id="nav-form"
-                        >
-                            <div className="nav-labels" style={this.state.navSearch}>
-                                <input 
-                                    type="text" 
-                                    id="navInput"
-                                    name="navInput"
-                                    className="nav-search-input"
-                                    placeholder="Add New City" 
-                                    onFocus={this.props.inputFocused} 
-                                    onBlur={this.props.inputUnfocused}
-                                    style={this.props.inputStateNav}
-                                    onInput={this.props.checkInputStateNav}
-                                ></input>
-
-
-                                <select name="navStateSelect" id="navStateSelect" placeholder="Enter" style={this.props.formStateNav} onFocus={this.props.inputFocused} onBlur={this.props.inputUnfocused}>
-                                    {stateMap}
-                                </select>
-
-                                <button name="nav-search-button"  id="nav-search-button" className="nav-search-button"> <img  className="plus-icon" src='https://www.freepnglogos.com/uploads/plus-icon/plus-icon-plus-sign-icon-icons-download-22.png'/> </button>
-
-                                <label></label>
-                            </div>
-                        </form>
-
-                        <input 
-                            type="checkbox" 
-                            id="nav-bg-toggle"
-                            onClick={this.navToggle} 
-                        />
-
-                        <label for="nav-bg-toggle" className="nav-bg-toggle-btn" style={this.state.navDropDown} />
-
-                        <div className="nav-dropdown-bg" style={this.state.navDropDown}/>
-                        
-                        <div className="nav-text">Recent Searches</div>
-                        <div className="nav-recent"> {this.props.previousCityMap} </div>
-                    </div>
-
-
+                    <div className="nav-dropdown-bg" style={props.navDropDown}/>
+                    
+                    <div className="nav-text">Recent Searches</div>
+                    <div className="nav-recent"> {props.previousCityMap} </div>
                 </div>
+
+
             </div>
-        )
-    }
+        </div>
+    )
 }
 
 export default Nav

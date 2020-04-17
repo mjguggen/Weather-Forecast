@@ -59,7 +59,6 @@ const weatherCodes = [
   {code: 'clear', description: 'Clear, Sunny',  icon: clear},
 ]
 
-
 const hourConvert = [
   "12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM",   "12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM", "12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM",   "12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM"
 ]
@@ -82,76 +81,80 @@ const highlightOff = {
   border: "none"
 }
 
-//hide state dropdown
-const numInput = {
-  opacity: 0,
-  width: "0px",
-  transition: "width 1s"
+const inputStyle = {
+  //hide state dropdown
+  numInput: {
+    opacity: 0,
+    width: "0px",
+    transition: "width 1s"
+  },
+  //if text inputted - show state dropdown
+  textInput: {
+    textInput: {
+      opacity: 1,
+      display: "block",
+      width: "60px",
+      transition: "width 1s",
+    }
+  },
+  //move button left on open;
+  buttonLeft: {
+    marginLeft: "-4px"
+  },
+  // move button right if text entered
+  buttonRight: {
+    marginLeft: "5px"
+  },
+  //text input if nubmer inputted
+  numInput2: {
+    num2: {
+      width: "200px",
+    }
+  },
+  //text input if text inputted
+  textInput2: {
+    textInput2: {
+      width: "200px",
+    }
+  }
 }
 
-//if text inputted - show state dropdown
-const textInput = {
-  textInput: {
-    opacity: 1,
+const zoomWidth = window.screen.availWidth < 475 ? 'scale(.9)' : 'scale(1)'
+
+//Nav Form Inputs Style
+const NavInputStyle = {
+  numInputNav: {
+    display: "none",
+    width: "0px",
+    transition: "width 2s",
+  },
+  textInputNav: {
     display: "block",
     width: "60px",
-    transition: "width 1s",
-  }
-}
-
-//move button left on open;
-const buttonLeft = {
-  marginLeft: "-4px"
-}
-
-// move button right if text entered
-const buttonRight = {
-  marginLeft: "5px"
-}
-
-//text input if nubmer inputted
-const numInput2 = {
-  num2: {
-    width: "200px",
-  }
-}
-
-//text input if text inputted
-const textInput2 = {
-  textInput2: {
-    width: "200px",
-  }
-}
-
-//Nav Form Inputs
-const numInputNav = {
-  display: "none",
-  width: "0px",
-  transition: "width 2s",
-}
-
-const textInputNav = {
-  display: "block",
-  width: "60px",
-  transition: "width 2s",
-}
-
-const numInputNav2 = {
-  width: "182px"
-}
-
-const textInputNav2 = {
-  width: "120px"
-}
-
-const focusOff = {
-  filter: "blur(0px) brightness(70%)",
-  transition: "filter 1s"
-}
-
-const focusOn = {
-  filter: "blur(10px) brightness(50%)",
-  transition: 'filter 1s',
+    transition: "width 2s",
+  },
+  numInputNav2: {
+    width: "182px"
+  },
+  textInputNav2: {
+    width: "120px"
+  },
+  loadStyle: {
+    off: {
+      display: "none"
+    },
+    on: {
+      display: "block"
+    }
+  },
+  zoomBack: {
+    transform: 'scale(1)',
+    transition: 'transform .5s'
+  },
+  zoomOut: {
+    transform: window.screen.availWidth > 475 ? 'scale(.9)' : 'scale(1)',
+    transition: 'transform .5s',
+  },
 }
 
 const loadStyle = {
@@ -163,8 +166,68 @@ const loadStyle = {
   }
 }
 
+//Nav Styles
+const navStyle = {
+  navOn: {
+    display: "block"
+  }, 
+  navOff: {
+    display: "none"
+  },
+  burgerTopOff: {
+    transformOrigin: "left top",
+    transition: "all .5s",
+    transform: "translateX(0px) rotate(0deg)",
+  },
+  burgerTopOn: {
+    transformOrigin: "left top",
+    transition: "all .5s",
+    transform: "translateX(5px) rotate(45deg)",
+    boxShadow: "0 0 4px white",
+  },
+  burgerMidOff: {
+    transition: "opacity .2s",
+    opacity: "1",
+  },
+  burgerMidOn: {
+    transition: "opacity .2s",
+    opacity: "0",
+  },
+  burgerBottomOff: {
+    transition: "all .5s",
+    transform: "translateX(0px) translateY(0px) rotate(0deg)",
+  },
+  burgerBottomOn: {
+    transition: "all .5s",
+    transform: "translateX(0px) translateY(-10px) rotate(135deg)",
+    boxShadow: "0 0 4px white"
+  },
+  navDropDownOff: {
+    transition: "left .5s",
+    left: "-125vw"
+  },
+  navDropDownOn: {
+    transition: "left .3s",
+    left: "0px"
+  },
+  navSearchOff: {
+    transition: "marginRight 3s",
+    transitionDelay: "3s",
+  },
+  navSearchOn: {
+    transition: "marginRight 3s",
+    transitionDelay: "3s",
+  }
+}
+
 
 class App extends React.Component {
+
+  componentDidMount(){
+    console.log(window)
+    console.log(window.screen.availWidth)
+
+  }
 
   state = {
     //API Calls
@@ -254,15 +317,25 @@ class App extends React.Component {
 
     //Form State
     formStyle: on,
-    formState: numInput,
-    inputState: numInput2,
-    buttonState: buttonLeft,
+    formState: inputStyle.numInput,
+    inputState: inputStyle.numInput2,
+    buttonState: inputStyle.buttonLeft,
 
     //Nav Form State
     formStyleNav: on,
-    formStateNav: numInputNav,
-    inputStateNav: numInputNav2,
+    formStateNav: NavInputStyle.numInputNav,
+    inputStateNav: NavInputStyle.numInputNav2,
     hideNav: "off",
+
+    //NavStyles
+    navState: navStyle.navOff,
+    status: "off",
+    burgertop: navStyle.burgerTopOff,
+    burgerMid: navStyle.burgerMidOff,
+    burgerBottom: navStyle.burgerBottomOff,
+    navDropDown: navStyle.navDropDownOff,
+    navSearch: navStyle.navSearchOff,
+    zoom: NavInputStyle.zoomBack,
 
     //Form gets
     getCity: undefined,
@@ -312,14 +385,14 @@ class App extends React.Component {
     const currentInput = document.getElementById("main-input").value
     const numCheck = Number(currentInput)
 
-    isNaN(numCheck) === true ? await this.setState({formState: textInput.textInput, inputState: textInput2.textInput2, buttonState: buttonRight}) : await this.setState({formState: numInput.num2, inputState: numInput2.num2, buttonState: buttonLeft})
+    isNaN(numCheck) === true ? await this.setState({formState: inputStyle.textInput.textInput, inputState: inputStyle.textInput2.textInput2, buttonState: inputStyle.buttonRight}) : await this.setState({formState: inputStyle.numInput.num2, inputState: inputStyle.numInput2.num2, buttonState: inputStyle.buttonLeft})
   }
 
   checkInputStateNav = async () => {
     const currentInput = document.getElementById("navInput").value
     const numCheck = Number(currentInput)
 
-    isNaN(numCheck) === true ? await this.setState({formStateNav: textInputNav, inputStateNav: textInputNav2}) : await this.setState({formStateNav: numInputNav, inputStateNav: numInputNav2})
+    isNaN(numCheck) === true ? await this.setState({formStateNav: NavInputStyle.textInputNav, inputStateNav: NavInputStyle.textInputNav2}) : await this.setState({formStateNav: NavInputStyle.numInputNav, inputStateNav: NavInputStyle.numInputNav2})
   }
 
   // if Weather is text - getCityWeather else getZipWeather
@@ -422,7 +495,6 @@ class App extends React.Component {
     const lon = this.state.currentLon
     const currentCall = await fetch(`https://api.climacell.co/v3/weather/realtime?lat=${lat}&lon=${lon}&unit_system=us&fields=precipitation,precipitation%3Ain%2Fhr,temp%3AF,feels_like%3AF,dewpoint%3AF,wind_gust%3Amph,wind_speed%3Amph,baro_pressure%3AinHg,visibility%3Ami,humidity,road_risk,epa_aqi,humidity%3A%25,wind_direction,wind_direction%3Adegrees,sunrise,sunset,cloud_cover,cloud_cover%3A%25,moon_phase,dewpoint%3AF,fire_index,weather_code,epa_health_concern&apikey=${Climacell_KEY}`)
 
-
     const today = new Date()
 
     Date.prototype.addDays = function(days) {
@@ -436,12 +508,9 @@ class App extends React.Component {
     const endHour = today.addDays(2)
     const hourEndStr = endHour.toISOString()
 
-//    const currentCall = await fetch(`https://api.weatherbit.io/v2.0/current?lat=${lat}&lon=${lon}&units=I&key=${WEATHERBIT_KEY}`);
     const currentData = await currentCall.json();
-//    const forecastCall = await fetch(`https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&units=I&key=${WEATHERBIT_KEY}&days=8`)
     const forecastCall = await fetch(`https://api.climacell.co/v3/weather/forecast/daily?lat=${lat}&lon=${lon}&start_time=now&end_time=${dateEndStr}&unit_system=us&fields=temp,temp%3AF,feels_like%3AF,wind_speed,wind_speed%3Amph,wind_direction,baro_pressure,precipitation%3Ain%2Fhr,precipitation_accumulation,precipitation_probability%3A%25,visibility%3Am,humidity,humidity%3A%25,sunrise,sunset,weather_code,moon_phase&apikey=${Climacell_KEY}`)
     const forecastData = await forecastCall.json();
-//    const hourlyCall = await fetch(`https://api.weatherbit.io/v2.0/forecast/hourly?lat=${lat}&lon=${lon}&units=I&hours=48&key=${WEATHERBIT_KEY}`);
 
     const hourlyCall = await fetch(`https://api.climacell.co/v3/weather/forecast/hourly?lat=${lat}&lon=${lon}&unit_system=us&fields=precipitation%3Ain%2Fhr,precipitation_type,precipitation_probability,precipitation_probability%3A%25,temp%3AF,feels_like%3AF,dewpoint%3AF,wind_speed%3Amph,baro_pressure,baro_pressure%3AinHg,visibility%3Ami,humidity,humidity%3A%25,wind_direction,wind_direction%3Adegrees,sunrise,sunset,cloud_cover,cloud_cover%3A%25,weather_code,moon_phase,road_risk,epa_aqi,epa_health_concern&start_time=now&end_time=${hourEndStr}&apikey=TWUGRFAsriuVHdQPXT9LAPWl3wqJidaV`)
     const hourlyData = await hourlyCall.json();
@@ -506,7 +575,6 @@ class App extends React.Component {
           inputFocus: "off"
         })
       }
-
   }
 
   getCityWeatherNav = async (event) => {
@@ -775,7 +843,6 @@ class App extends React.Component {
     }
   }
 
-
   //add city to recent cities
   addToRecent = async () => {
     const lat = await this.state.currentLat
@@ -804,11 +871,39 @@ class App extends React.Component {
     
   }
 
+  navToggle = async () => {
+    this.zoom()
+
+    if (this.state.navState === navStyle.navOff){
+        await this.setState({
+        navState : navStyle.navOn,
+        status: "show",
+        burgerTop: navStyle.burgerTopOn,
+        burgerMid: navStyle.burgerMidOn,
+        burgerBottom: navStyle.burgerBottomOn,
+        navDropDown: navStyle.navDropDownOn,
+        navSearch: navStyle.navSearchOn,
+    })
+    } else {
+        await this.setState({
+            navState: navStyle.navOff,
+            status: "hide",
+            burgerTop: navStyle.burgerTopOff,
+            burgerMid: navStyle.burgerMidOff,
+            burgerBottom: navStyle.burgerBottomOff,
+            navDropDown: navStyle.navDropDownOff,
+            navSearch: navStyle.navSearchOff,
+        })
+    }
+}
+
+  zoom = async () => {
+    this.state.zoom === NavInputStyle.zoomBack ? await this.setState({zoom: NavInputStyle.zoomOut}) : await this.setState({zoom: NavInputStyle.zoomBack})
+  }
 
   render() {
     return (
       <div className="App">
-
         <Nav
           getWeatherNav={this.getWeatherNav}
           getRecentWeather={this.getRecentWeather}
@@ -821,6 +916,15 @@ class App extends React.Component {
           previousCity={this.state.previousCity}
           previousCityMap={this.state.previousCityMap}
           error={this.state.error}
+          navToggle={this.navToggle}
+          navState= {this.state.navState}
+          status= {this.state.status}
+          burgerTop= {this.state.burgerTop}
+          burgerMid= {this.state.burgerMid}
+          burgerBottom= {this.state.burgerBottom}
+          navDropDown= {this.state.navDropDown}
+          navSearch= {this.state.navSearch}
+          zoom={this.zoom}
         />
 
         <CurrentWeatherBackground
@@ -829,7 +933,7 @@ class App extends React.Component {
           code={this.state.code}
         />
         <div className="main-wrapper">
-          <div className="main">
+          <div className="main" style={this.state.zoom}>
 
             <Form
               style={this.state.style}
