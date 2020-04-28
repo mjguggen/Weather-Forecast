@@ -8,8 +8,8 @@ const moonPhaseAssets = [
     {phase: "waxing_gibbous", src:"https://upload.wikimedia.org/wikipedia/commons/0/0f/Emojione_1F314.svg"},
     {phase: "full_moon", src:"https://upload.wikimedia.org/wikipedia/commons/f/f7/Emojione_1F315.svg"},
     {phase: "waning_gibbous", src:"https://upload.wikimedia.org/wikipedia/commons/d/d8/Emojione_1F316.svg"},
-    {phase: "last_quarter", src:"https://upload.wikimedia.org/wikipedia/commons/6/68/Emojione_1F317.svg"},
-    {phase: "waning_cresent", src:"https://upload.wikimedia.org/wikipedia/commons/1/10/Emojione_1F318.svg"},
+    {phase: "third_quarter", src:"https://upload.wikimedia.org/wikipedia/commons/6/68/Emojione_1F317.svg"},
+    {phase: "waxing_crescent", src:"https://upload.wikimedia.org/wikipedia/commons/1/10/Emojione_1F318.svg"},
 ]
 
 

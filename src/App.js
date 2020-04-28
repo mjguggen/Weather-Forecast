@@ -85,8 +85,9 @@ const inputStyle = {
   //hide state dropdown
   numInput: {
     opacity: 0,
+    pointerEvents: "none",
     width: "0px",
-    transition: "width 1s"
+    transition: "width 1s",
   },
   //if text inputted - show state dropdown
   textInput: {
@@ -119,25 +120,23 @@ const inputStyle = {
   }
 }
 
-const zoomWidth = window.screen.availWidth < 475 ? 'scale(.9)' : 'scale(1)'
 
 //Nav Form Inputs Style
 const NavInputStyle = {
   numInputNav: {
     display: "none",
+    pointerEvents: "none",
     width: "0px",
-    transition: "width 2s",
   },
   textInputNav: {
     display: "block",
     width: "60px",
-    transition: "width 2s",
   },
   numInputNav2: {
-    width: "182px"
+    width: "175px"
   },
   textInputNav2: {
-    width: "120px"
+    width: "113px"
   },
   loadStyle: {
     off: {

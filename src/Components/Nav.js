@@ -119,7 +119,7 @@ const Nav = props => {
                                 {stateMap}
                             </select>
 
-                            <button name="nav-search-button"  id="nav-search-button" className="nav-search-button"> <img  className="plus-icon" src='https://www.freepnglogos.com/uploads/plus-icon/plus-icon-plus-sign-icon-icons-download-22.png'/> </button>
+                            <button name="nav-search-button"  id="nav-search-button" className="nav-search-button"> + </button>
 
                             <label></label>
                         </div>
