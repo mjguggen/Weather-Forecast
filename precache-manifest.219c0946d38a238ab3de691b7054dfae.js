@@ -1,27 +1,27 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "05c0ca1972325913dc0d62b6748e4c0c",
+    "revision": "c1b01a38769a94e20134804642e548a3",
     "url": "/Weather-Forecast/index.html"
   },
   {
-    "revision": "711d0f0aac7ca93dbd12",
+    "revision": "5ed37c147e6ef8a4cad5",
     "url": "/Weather-Forecast/static/css/2.67123b20.chunk.css"
   },
   {
-    "revision": "e08c4b8acc8d116c8a07",
-    "url": "/Weather-Forecast/static/css/main.642601a1.chunk.css"
+    "revision": "8c574fd29c4e846dc047",
+    "url": "/Weather-Forecast/static/css/main.a912112a.chunk.css"
   },
   {
-    "revision": "711d0f0aac7ca93dbd12",
-    "url": "/Weather-Forecast/static/js/2.79167b50.chunk.js"
+    "revision": "5ed37c147e6ef8a4cad5",
+    "url": "/Weather-Forecast/static/js/2.cf43f1f4.chunk.js"
   },
   {
     "revision": "99bd0487192ec9e7d9ee8fbbd91ee444",
-    "url": "/Weather-Forecast/static/js/2.79167b50.chunk.js.LICENSE.txt"
+    "url": "/Weather-Forecast/static/js/2.cf43f1f4.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "e08c4b8acc8d116c8a07",
-    "url": "/Weather-Forecast/static/js/main.2f73760f.chunk.js"
+    "revision": "8c574fd29c4e846dc047",
+    "url": "/Weather-Forecast/static/js/main.97890d8d.chunk.js"
   },
   {
     "revision": "6cbc84f3eedb80ac938b",
@@ -66,6 +66,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "b820d9957bf5bd61776adc09d15de4bb",
     "url": "/Weather-Forecast/static/media/rain_darkbg.b820d995.svg"
+  },
+  {
+    "revision": "960598a5dbbbcf4df0a98c3c57fb1d13",
+    "url": "/Weather-Forecast/static/media/remove.960598a5.svg"
   },
   {
     "revision": "de5d190b807d18b8f39cbaab83771649",
