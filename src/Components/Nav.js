@@ -65,16 +65,6 @@ const Nav = props => {
         setTimeout(props.navToggle(event), 3000)
     }
 
-    const focusFunc = (event) => {
-        props.inputFocused()
-        props.zoom()
-    }
-
-    const blurFunc = (event) => {
-        props.inputUnfocused()
-        props.zoom()
-    }
-
     return(
         <div>
             <div className="title">
@@ -136,7 +126,7 @@ const Nav = props => {
                     <div className="nav-dropdown-bg" style={props.navDropDown}/>
                     
                     <div className="nav-text">Recent Searches</div>
-                    <div className="nav-recent"> {props.previousCityMap} </div>
+                    <div className="nav-recent"> {props.recentCitiesMap} </div>
                 </div>
 
 

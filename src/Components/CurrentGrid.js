@@ -56,7 +56,7 @@ const CurrentGrid = props => {
                         <div id="grid-label">FIRE INDEX</div>
                         <div id="grid-label"> ROAD RISK </div>
                         <div id="grid-data">{Math.round(props.fireIndex)}</div>
-                        <div id="grid-data">{props.roadRisk.replace(/_/g, ' ')}</div>
+                        <div id="grid-data">{replaceUnderscore(props.roadRisk)}</div>
                     </div>
 
 

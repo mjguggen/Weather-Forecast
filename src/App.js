@@ -24,8 +24,7 @@ import rain from './Assets/Dark/rain_darkbg.svg'
 import tstorm from './Assets/Dark/tstorm_darkbg.svg'
 import clear from './Assets/Either/clear_day.svg'
 import snow from './Assets/Either/snow.svg'
-import { ThemeProvider } from 'styled-components';
-
+import remove from './Assets/remove.svg'
 
 //API Keys
 //const WEATHERBIT_KEY = "afb2377ad5e14308a0f298103d88b7b3"
@@ -222,12 +221,6 @@ const navStyle = {
 
 class App extends React.Component {
 
-  componentDidMount(){
-    console.log(window)
-    console.log(window.screen.availWidth)
-
-  }
-
   state = {
     //API Calls
     currentCall: undefined,
@@ -293,22 +286,11 @@ class App extends React.Component {
     highlight: [highlightOff, highlightOff, highlightOff, highlightOff, highlightOff, highlightOff, highlightOff],
 
     //Map Latitude and Longitude
-    previousCity: [],
-    previousCityMap: undefined,
     zipInput: undefined,
-    previousZip: [],
-    previousZipMap: undefined,
     currentLat: undefined,
     currentLong: undefined,
-    previousLat: [],
-    previousLon: [],
-    previousStateName: [],
-
-    //Save Data
-    currentDataSave: [],
-    forecastDataSave: [],
-    hourlyDataSave: [],
-    locationDataSave: [],
+    dataArr: [],
+    recentCitiesMap: undefined,
 
     //Show/Hide
     style: on,
@@ -350,6 +332,16 @@ class App extends React.Component {
   }
   
 
+  async componentDidMount(){
+
+    const storage = JSON.parse(localStorage.data)
+    
+    if (storage.length >= 1) {
+      await storage.map(i => this.state.dataArr.push(i))
+      await this.updateRecent()
+    }
+    
+  }
 
   inputFocused = () => {
     this.setState({
@@ -411,10 +403,7 @@ class App extends React.Component {
     event.preventDefault();
     const zip = event.target.input_1.value;
 
-    await this.setState({
-      loading: true,
-      loadingStyle: loadStyle.on
-    })
+    await this.startLoad()
     
     const call = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${zip}&limit=1&key=${OPENCAGE_KEY}`);
     const data = await call.json()
@@ -434,16 +423,8 @@ class App extends React.Component {
         currentLon: data.results[0].geometry.lng,
       });
   
-      await this.apiCalls();
-      await this.stateSetter();
-      await this.addToRecent();
-
-      
-      await this.setState({
-        loading: false,
-        loadingStyle: loadStyle.off, 
-        inputFocus: "off"
-      })
+      await this.callAndStoreData()
+      await this.endLoad()
     }
   }
 
@@ -454,10 +435,7 @@ class App extends React.Component {
     const city = event.target.input_1.value.split(' ').join('+');
     const state = event.target.input_2.value;
 
-    await this.setState({
-      loading: true,
-      loadingStyle: loadStyle.on
-    })
+    await this.startLoad()
 
     const call = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city},${state}&limit=1&key=${OPENCAGE_KEY}`)
     const data = await call.json()
@@ -476,19 +454,34 @@ class App extends React.Component {
         currentLon: data.results[0].geometry.lng,
       });
   
-      await this.apiCalls();
-      await this.stateSetter();
-      await this.addToRecent();
-
-      
-      await this.setState({
-        loading: false,
-        loadingStyle: loadStyle.off, 
-        inputFocus: "off"
-      })
+      await this.callAndStoreData()
+      await this.endLoad()
     }
   }
+
+  storeData = () => {
+    localStorage.clear()
+    localStorage.data = JSON.stringify(this.state.dataArr)
+  }
+
+  // start loading screen
+  startLoad = () => {
+    this.setState({
+      loading: true,
+      loadingStyle: loadStyle.on
+    })
+  }
+
+  // end loading screen
+  endLoad = () => {
+    this.setState({
+      loading: false,
+      loadingStyle: loadStyle.off, 
+      inputFocus: "off"
+    })
+  }
   
+  //call apis
   apiCalls = async (event) => {
     const lat = this.state.currentLat;
     const lon = this.state.currentLon
@@ -514,11 +507,15 @@ class App extends React.Component {
     const hourlyCall = await fetch(`https://api.climacell.co/v3/weather/forecast/hourly?lat=${lat}&lon=${lon}&unit_system=us&fields=precipitation%3Ain%2Fhr,precipitation_type,precipitation_probability,precipitation_probability%3A%25,temp%3AF,feels_like%3AF,dewpoint%3AF,wind_speed%3Amph,baro_pressure,baro_pressure%3AinHg,visibility%3Ami,humidity,humidity%3A%25,wind_direction,wind_direction%3Adegrees,sunrise,sunset,cloud_cover,cloud_cover%3A%25,weather_code,moon_phase,road_risk,epa_aqi,epa_health_concern&start_time=now&end_time=${hourEndStr}&apikey=TWUGRFAsriuVHdQPXT9LAPWl3wqJidaV`)
     const hourlyData = await hourlyCall.json();
 
-    await this.setState({
-      currentData: currentData,
-      forecastData: forecastData,
-      hourlyData: hourlyData,
-    })
+    if (currentData.message === "API rate limit exceeded" || hourlyData.message === "API rate limit exceeded" || forecastData.message === "API rate limit exceeded") {
+      this.setState({error: "Data limit reached, please wait 1 hour"})
+    } else {
+      await this.setState({
+        currentData: currentData,
+        forecastData: forecastData,
+        hourlyData: hourlyData,
+      })
+    }
   }
 
   // if Weather is text - getCityWeather else getZipWeather -- Nav Search
@@ -535,15 +532,13 @@ class App extends React.Component {
     document.getElementById("navInput").value = null
   }
 
-    //Get weather base on zip code -- Nav input
+  //Get weather base on zip code -- Nav input
   getZipWeatherNav = async (event) => {
       event.preventDefault();
   
       const zip = document.getElementById("navInput").value
-      await this.setState({
-        loading: true,
-        loadingStyle: loadStyle.on
-      })
+
+      await this.startLoad()
       
       const call = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${zip}&limit=1&key=${OPENCAGE_KEY}`);
       const data = await call.json()
@@ -563,16 +558,8 @@ class App extends React.Component {
           currentLon: data.results[0].geometry.lng,
         });
     
-        await this.apiCalls();
-        await this.stateSetter();
-        await this.addToRecent();
-  
-        
-        await this.setState({
-          loading: false,
-          loadingStyle: loadStyle.off, 
-          inputFocus: "off"
-        })
+        await this.callAndStoreData()
+        await this.endLoad()
       }
   }
 
@@ -582,10 +569,7 @@ class App extends React.Component {
     const city = document.getElementById("navInput").value
     const state = document.getElementById("navStateSelect").value
     
-    await this.setState({
-      loading: true,
-      loadingStyle: loadStyle.on
-    })
+    await this.startLoad()
 
     const call = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city},${state}&limit=1&key=${OPENCAGE_KEY}`)
     const data = await call.json()
@@ -604,34 +588,170 @@ class App extends React.Component {
         currentLon: data.results[0].geometry.lng,
       });
   
-      await this.apiCalls();
-      await this.stateSetter();
-      await this.addToRecent();
+      await this.callAndStoreData()
 
-      
-      await this.setState({
-        loading: false,
-        loadingStyle: loadStyle.off, 
-        inputFocus: "off"
-      })
+      await this.endLoad()
     }
   }
 
+  callAndStoreData = async () => {
+      await this.apiCalls();
+      await this.stateSetter();
+      await this.addToRecent();
+      await this.storeData()
+      await this.setStyles()
+  }
+
+  //get description and update
+  getDescription = (input) => {
+    for(let i=0; i < weatherCodes.length; i++) {
+      if (input === weatherCodes[i].code) {
+        return weatherCodes[i].description
+      }
+    }
+  }
+
+  //format weather properly based on input
+  getWindDirection = (input) => {
+    if (input <= 22.5 || input > 337.5) {
+      return "N"
+    } else if (input > 22.5 && input <= 67.5) {
+      return "NE"
+    } else if (input > 67.5  && input <= 112.5) {
+      return "E"
+    } else if (input > 112.5 && input <= 157.5) {
+      return "SE"
+    } else if (input > 157.5  && input <= 202.5) {
+      return "S"
+    } else if (input > 202.5  && input <= 247.5) {
+      return "SE"
+    } else if (input > 247.5  && input <= 292.5) {
+      return "W"
+    } else if (input > 292.5  && input <= 337.5) {
+      return "NW"
+    }
+  }
+
+  // get icons based on weather code
+  getIcon = (input) => {
+    for(let i=0; i < weatherCodes.length; i++) {
+      if (input === weatherCodes[i].code) {
+        return weatherCodes[i].icon
+      }
+    }
+  }
+
+  //set states
+  stateSetter = async () => {
+    const currentData = this.state.currentData
+    const forecastData = this.state.forecastData
+    const hourlyData = this.state.hourlyData
+    if(this.state.error === undefined) {
+      if (currentData.statusCode === 400 || forecastData.statusCode === 400 || hourlyData.statusCode === 400) {
+        this.setState({
+          error: "Enter a valid location"
+        })
+      } else {
+        // set location data states
+        await this.setLocationData()
+        //set current data states
+        await this.setCurrentData()
+        //set forecast data states
+        await this.setForecastData()
+        //set hourly data states
+        await this.setHourlyData()
+        //set styles and error
+        await this.setStyles()
+      }
+    }
+  }
+
+  //add city to recent cities
+  addToRecent = async () => {
+    if (this.state.error === undefined) {
+      const zip = this.state.zipInput
+      const dataArr = this.state.dataArr
+  
+      this.state.dataArr.push(
+        {
+          city: this.state.city === undefined ? this.state.county : this.state.city,
+          county: this.state.county,
+          lat: this.state.currentLat,
+          lon: this.state.currentLon,
+          state: this.state.state,
+          zip: zip,
+          state: this.state.state,
+          timezone: this.state.timezone,
+          timezoneOffset: this.state.timezoneOffset,
+          timezoneOffsetSec: this.state.timezoneOffsetSec,
+          sunriseTS: this.state.sunriseTS,
+          sunsetTS: this.state.sunsetTS
+        }
+      )
+      
+      await this.updateRecent()
+    }
+  }
+
+  //update recent cities map
+  updateRecent = async () => {
+    this.setState({
+      recentCitiesMap: this.state.dataArr.map((element, index) => 
+      <div key={index}>
+        <div className="recent-city-container">
+            <input type="checkbox" className="recent-city-checkbox" id={index} key={'recent-city-key-'+element}  onClick={this.getRecentWeather} data-index={index}/> 
+
+            <label className="recent-city" for={index} key={'recent-city-label-'+element} data-index={index}> {element.city} </label>
+
+            <div className="recent-city-remove-container"> 
+              <div className="recent-city-remove-icon"  name={element.city} data-index={index} onClick={this.removeRecent}>
+                x
+              </div> 
+            </div>
+
+        </div>
+          <div className="recent-city-bar"/>
+      </div>
+
+      )
+    })
+  }
+
+  //get recent weather
   getRecentWeather = async (event) => {
     event.preventDefault();
 
-    const index = event.target.value
+    console.log(event.target.dataset.index)
 
-   const locationData = this.state.locationDataSave[index]
-   const currentData = this.state.currentDataSave[index]
-   const forecastData = this.state.forecastDataSave[index]
-   const hourlyData = this.state.hourlyDataSave[index]
+    const index = event.target.dataset.index
+    console.log(index)
 
-    // set location data states
+    await this.startLoad()
+
     await this.setState({
+      currentLat: this.state.dataArr[index].lat,
+      currentLon: this.state.dataArr[index].lon,
+      city: this.state.dataArr[index].city,
+      state: this.state.dataArr[index].state
+    })
+
+    await this.apiCalls();
+    await this.setCurrentData()
+    await this.setForecastData()
+    await this.setHourlyData()
+    await this.setStyles()
+
+    await this.endLoad()
+  }
+
+  //state setters
+  setLocationData = () => {
+    const locationData = this.state.locationData
+    this.setState({
       //Location Data
       city: locationData.results[0].components.city,
       state: locationData.results[0].components.state_code,
+      county: locationData.results[0].components.county,
       lat: locationData.results[0].geometry.lat,
       long: locationData.results[0].geometry.lng,
       timezone: locationData.results[0].annotations.timezone.name,
@@ -640,8 +760,12 @@ class App extends React.Component {
       sunriseTS: locationData.results[0].annotations.sun.rise.apparent,
       sunsetTS: locationData.results[0].annotations.sun.set.apparent,
     })
-    //set current data states
-    await this.setState({
+  }
+
+  //set current data
+  setCurrentData = () => {
+    const currentData = this.state.currentData
+    this.setState({
       //Current Data
       code: currentData.weather_code.value,
       currentDescription: this.getDescription(currentData.weather_code.value),
@@ -664,8 +788,13 @@ class App extends React.Component {
       dewpoint: currentData.dewpoint.value,
       fireIndex: currentData.fire_index.value,
     })
-    //set forecast data states
-    await this.setState({
+  }
+
+  //set forecast data
+  setForecastData = () => {
+    const forecastData = this.state.forecastData
+
+    this.setState({
       //Forecast Data
       forecastDescription: forecastData.slice(1).map(i => this.getDescription(i.weather_code.value)),
 
@@ -680,11 +809,16 @@ class App extends React.Component {
 
       forecastIcons: forecastData.slice(1).map(i => this.getIcon(i.weather_code.value)),
     })
-    //set hourly data states
-    await this.setState({
+  }
+
+  //set hourly data
+  setHourlyData = () => {
+    const hourlyData = this.state.hourlyData
+
+    this.setState({
       //Hourly Data
       time: hourlyData.map((i, index) => (
-        <div id="time" key={i}>
+        <div id="time" key={"hourly-time-"+index}>
           {hourConvert[parseInt(hourlyData[index].observation_time.value.slice(11,13)) + this.state.timezoneOffset + 24]}
         </div>
       )),
@@ -693,188 +827,33 @@ class App extends React.Component {
 
       hourlyIcon: hourlyData.map((i, index) => (<img id="hourly-icon" src={this.getIcon(i.weather_code.value)} key={"hourly-icon-"+index} /> )),
     })
-    //set styles and error
-    await this.setState({
+  }
+
+  //set styles
+  setStyles = () => {
+    this.setState({
       //Styles
       style: off,
       oppStyle: on,
-
       //Error
       error: undefined,
     })
   }
 
-  getDescription = (input) => {
-    for(let i=0; i < weatherCodes.length; i++) {
-      if (input === weatherCodes[i].code) {
-        return weatherCodes[i].description
-      }
-    }
+  //remove city from recent list
+  removeRecent = async (e) => {
+    const index = e.target.dataset.index
+
+    await this.state.dataArr.splice(index, 1)
+    await this.updateRecent()
+    await this.storeData()
   }
 
-  getWindDirection = (input) => {
-    if (input <= 22.5 || input > 337.5) {
-      return "N"
-    } else if (input > 22.5 && input <= 67.5) {
-      return "NE"
-    } else if (input > 67.5  && input <= 112.5) {
-      return "E"
-    } else if (input > 112.5 && input <= 157.5) {
-      return "SE"
-    } else if (input > 157.5  && input <= 202.5) {
-      return "S"
-    } else if (input > 202.5  && input <= 247.5) {
-      return "SE"
-    } else if (input > 247.5  && input <= 292.5) {
-      return "W"
-    } else if (input > 292.5  && input <= 337.5) {
-      return "NW"
-    }
-  }
-
-  getIcon = (input) => {
-    for(let i=0; i < weatherCodes.length; i++) {
-      if (input === weatherCodes[i].code) {
-        return weatherCodes[i].icon
-      }
-    }
-  }
-
-  //set states
-  stateSetter = async () => {
-    const currentData = this.state.currentData
-    const forecastData = this.state.forecastData
-    const hourlyData = this.state.hourlyData
-    const locationData = this.state.locationData
-
-    const currentDataSave = this.state.currentDataSave
-    const forecastDataSave = this.state.forecastDataSave
-    const hourlyDataSave = this.state.hourlyDataSave
-    const locationDataSave = this.state.locationDataSave
-
-    if (currentData.statusCode === 400 || forecastData.statusCode === 400 || hourlyData.statusCode === 400 ) {
-      this.setState({
-        error: "Enter a valid location"
-      })
-    } else {
-      // set location data states
-      await this.setState({
-        //Location Data
-        city: locationData.results[0].components.city,
-        state: locationData.results[0].components.state_code,
-        county: locationData.results[0].components.county,
-        lat: locationData.results[0].geometry.lat,
-        long: locationData.results[0].geometry.lng,
-        timezone: locationData.results[0].annotations.timezone.name,
-        timezoneOffset: parseInt(locationData.results[0].annotations.timezone.offset_string.slice(0, 3)),
-        timezoneOffsetSec: locationData.results[0].annotations.timezone.offset_sec,
-        sunriseTS: locationData.results[0].annotations.sun.rise.apparent,
-        sunsetTS: locationData.results[0].annotations.sun.set.apparent,
-      })
-      //set current data states
-      await this.setState({
-        //Current Data
-        code: currentData.weather_code.value,
-        currentDescription: this.getDescription(currentData.weather_code.value),
-        currentWeatherIcon: this.getIcon(currentData.weather_code.value),
-        currentTemp: currentData.temp.value,
-        sunrise: currentData.sunrise.value.slice(11,16),
-        sunset: currentData.sunset.value.slice(11,16),
-        feelsLike: currentData.feels_like.value,
-        humidity: currentData.humidity.value,
-        clouds: currentData.cloud_cover.value,
-        precipitation: currentData.precipitation.value,
-        pressure: currentData.baro_pressure.value,
-        windSpeed: currentData.wind_speed.value,
-        windDirection: this.getWindDirection(currentData.wind_direction.value),
-        visibility: currentData.visibility.value,
-        pressure: currentData.baro_pressure.value,
-        aqi: currentData.epa_aqi.value,
-        roadRisk: currentData.road_risk.value,
-        moonPhase: currentData.moon_phase.value,
-        dewpoint: currentData.dewpoint.value,
-        fireIndex: currentData.fire_index.value,
-      })
-      //set forecast data states
-      await this.setState({
-        //Forecast Data
-        forecastDescription: forecastData.slice(1).map(i => this.getDescription(i.weather_code.value)),
-  
-        forecastHighs: forecastData.slice(1).map(i=> Math.round(i.temp[1].max.value)),
-        forecastLows: forecastData.slice(1).map(i=> Math.round(i.temp[0].min.value)),
-  
-        forecastLowHighs: forecastData.slice(1).map((i, index) => (
-          <div id="low-high" key={"low-high-"+index}> 
-            {Math.round(i.temp[0].min.value)}° | {Math.round(i.temp[1].max.value)}° 
-          </div>
-        )),
-  
-        forecastIcons: forecastData.slice(1).map(i => this.getIcon(i.weather_code.value)),
-      })
-      //set hourly data states
-      await this.setState({
-        //Hourly Data
-        time: hourlyData.map((i, index) => (
-          <div id="time" key={i}>
-            {hourConvert[parseInt(hourlyData[index].observation_time.value.slice(11,13)) + this.state.timezoneOffset + 24]}
-          </div>
-        )),
-    
-        hourlyTemp: hourlyData.map((i, index) => (<div key={"hourlytemp-"+index}> {Math.round((i.temp.value))}° </div> )),
-  
-        hourlyIcon: hourlyData.map((i, index) => (<img id="hourly-icon" src={this.getIcon(i.weather_code.value)} key={"hourly-icon-"+index} /> )),
-      })
-      //set styles and error
-      await this.setState({
-        //Styles
-        style: off,
-        oppStyle: on,
-  
-        //Error
-        error: undefined,
-      })
-
-      //push data to save arrays
-      await currentDataSave.push(currentData)
-      await forecastDataSave.push(forecastData)
-      await hourlyDataSave.push(hourlyData)
-      await locationDataSave.push(locationData)
-    }
-  }
-
-  //add city to recent cities
-  addToRecent = async () => {
-    const lat = await this.state.currentLat
-    const lon = await this.state.currentLon
-    const currentCity = this.state.city === undefined ? this.state.county : this.state.city
-    const saveCity = this.state.previousCity
-    const currentState = this.state.state
-    const saveState = this.state.previousStateName
-    const saveLat = this.state.previousLat
-    const saveLon = this.state.previousLon
-  
-    saveCity.push(currentCity)
-    saveLat.push(lat)
-    saveLon.push(lon)
-    saveState.push(currentState)
-    
-    await this.setState({
-      previousCityMap: saveCity.map((element, index) => <div>
-          <input type="checkbox" className="recent-city-checkbox" id={saveLat[index]} key={saveCity[index]} value={index} onClick={this.getRecentWeather}/> 
-
-          <label className="recent-city" for={saveLat[index]} key={'recent-city-label-'+element}> {element} </label>
-
-      </div>
-      )
-    })
-    
-  }
-
-  navToggle = async () => {
+  navToggle = () => {
     this.zoom()
 
     if (this.state.navState === navStyle.navOff){
-        await this.setState({
+        this.setState({
         navState : navStyle.navOn,
         status: "show",
         burgerTop: navStyle.burgerTopOn,
@@ -884,7 +863,7 @@ class App extends React.Component {
         navSearch: navStyle.navSearchOn,
     })
     } else {
-        await this.setState({
+        this.setState({
             navState: navStyle.navOff,
             status: "hide",
             burgerTop: navStyle.burgerTopOff,
@@ -912,8 +891,6 @@ class App extends React.Component {
           inputStateNav={this.state.inputStateNav}
           checkInputStateNav={this.checkInputStateNav}
           hideNav={this.state.hideNav}
-          previousCity={this.state.previousCity}
-          previousCityMap={this.state.previousCityMap}
           error={this.state.error}
           navToggle={this.navToggle}
           navState= {this.state.navState}
@@ -924,6 +901,8 @@ class App extends React.Component {
           navDropDown= {this.state.navDropDown}
           navSearch= {this.state.navSearch}
           zoom={this.zoom}
+          removeRecent={this.removeRecent}
+          recentCitiesMap={this.state.recentCitiesMap}
         />
 
         <CurrentWeatherBackground
@@ -982,7 +961,6 @@ class App extends React.Component {
                   dewpoint={this.state.dewPoint}
                   fireIndex={this.state.fireIndex}
                 />
-                
               </div>
             </div>
 
