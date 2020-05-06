@@ -331,16 +331,13 @@ class App extends React.Component {
     error: undefined,
   }
   
-
   async componentDidMount(){
 
-    const storage = JSON.parse(localStorage.data)
-    
-    if (storage.length >= 1) {
+    if (localStorage.length >= 1) {
+      const storage = JSON.parse(localStorage.data)
       await storage.map(i => this.state.dataArr.push(i))
       await this.updateRecent()
     }
-    
   }
 
   inputFocused = () => {
@@ -699,7 +696,12 @@ class App extends React.Component {
       recentCitiesMap: this.state.dataArr.map((element, index) => 
       <div key={index}>
         <div className="recent-city-container">
-            <input type="checkbox" className="recent-city-checkbox" id={index} key={'recent-city-key-'+element}  onClick={this.getRecentWeather} data-index={index}/> 
+            <input type="checkbox" 
+              className="recent-city-checkbox" 
+              id={index} key={'recent-city-key-'+element}  
+              onClick={this.getRecentWeather} 
+              data-index={index}
+            /> 
 
             <label className="recent-city" for={index} key={'recent-city-label-'+element} data-index={index}> {element.city} </label>
 
@@ -721,24 +723,33 @@ class App extends React.Component {
   getRecentWeather = async (event) => {
     event.preventDefault();
 
-    console.log(event.target.dataset.index)
-
     const index = event.target.dataset.index
-    console.log(index)
 
     await this.startLoad()
 
-    await this.setState({
-      currentLat: this.state.dataArr[index].lat,
-      currentLon: this.state.dataArr[index].lon,
-      city: this.state.dataArr[index].city,
-      state: this.state.dataArr[index].state
-    })
+    const city = await this.state.dataArr[index].city
+    const state = await this.state.dataArr[index].state
+
+    const call = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city},${state}&limit=1&key=${OPENCAGE_KEY}`)
+    const data = await call.json()
+
+    if (await data.total_results === 0 || data.results[0].confidence < 2) {
+      this.setState({
+        error: "Please enter a valid city",
+        loading: false,
+        loadingStyle: loadStyle.off,
+        inputFocus: "off"
+      })
+    } else {
+      await this.setState({
+        locationData: data,
+        currentLat: data.results[0].geometry.lat,
+        currentLon: data.results[0].geometry.lng,
+      });
+    }
 
     await this.apiCalls();
-    await this.setCurrentData()
-    await this.setForecastData()
-    await this.setHourlyData()
+    await this.stateSetter()
     await this.setStyles()
 
     await this.endLoad()

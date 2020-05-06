@@ -2,10 +2,7 @@ import React from 'react'
 
 const CurrentGrid = props => {
 
-    const replaceUnderscore = (input) => {
-        input.replace(/_/g, ' ').replace(/(\s{1,}|\b)(\w)/g)
-    }
-
+    const roadRisk = props.roadRisk === undefined ? "" : props.roadRisk.replace(/_/g, ' ')
 
     return(
     <div>
@@ -56,7 +53,7 @@ const CurrentGrid = props => {
                         <div id="grid-label">FIRE INDEX</div>
                         <div id="grid-label"> ROAD RISK </div>
                         <div id="grid-data">{Math.round(props.fireIndex)}</div>
-                        <div id="grid-data">{replaceUnderscore(props.roadRisk)}</div>
+                        <div id="grid-data">{roadRisk}</div>
                     </div>
 
 
