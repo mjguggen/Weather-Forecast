@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: Weather-Forecast
+  annotations:
+    github.com/project-slug: mjguggen/Weather-Forecast
+spec:
+  type: other
+  lifecycle: unknown
+  owner: mike-guggenbuehl
